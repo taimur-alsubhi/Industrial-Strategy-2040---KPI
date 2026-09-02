@@ -1,0 +1,164 @@
+
+<div class="dashboard-wrapper">
+  <!-- رأس لوحة القيادة -->
+  <header class="top-header">
+    <div class="brand-info">
+      <div class="logo-icon">📊</div>
+      <div>
+        <h1>لوحة متابعة الاستراتيجية الصناعية</h1>
+        <p>مرصد المؤشرات الاستراتيجية للقطاع الصناعي (2020 - 2040)</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="status-badge">
+        <span class="pulse-dot"></span> الحالة: متصل ومحدث
+      </div>
+    </div>
+  </header>
+
+  <!-- بطاقات الملخص التنفيذي (مؤشرات 2040) -->
+  <section class="summary-grid">
+    <div class="summary-card">
+      <div class="card-header-flex">
+        <span class="card-title">العمالة الصناعية المستهدفة</span>
+        <span class="badge-tag labor-color">عمالة</span>
+      </div>
+      <div class="card-body-flex">
+        <h3 id="val-labor">450 ألف</h3>
+        <span class="trend-indicator positive"><span>↑</span> مستهدف 2040</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-header-flex">
+        <span class="card-title">الاستثمار الأجنبي المباشر</span>
+        <span class="badge-tag fdi-color">استثمار</span>
+      </div>
+      <div class="card-body-flex">
+        <h3 id="val-fdi">12.5 مليار</h3>
+        <span class="trend-indicator positive"><span>↑</span> نمو تصاعدي</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-header-flex">
+        <span class="card-title">الصادرات غير النفطية</span>
+        <span class="badge-tag exports-color">صادرات</span>
+      </div>
+      <div class="card-body-flex">
+        <h3 id="val-exports">15 مليار</h3>
+        <span class="trend-indicator positive"><span>↑</span> الأسواق الدولية</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-header-flex">
+        <span class="card-title">مساهمة الناتج المحلي</span>
+        <span class="badge-tag gdp-color">الناتج المحلي</span>
+      </div>
+      <div class="card-body-flex">
+        <h3 id="val-gdp">16%</h3>
+        <span class="trend-indicator positive"><span>↑</span> الهدف الاستراتيجي</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- القسم الرئيسي: الرسوم البيانية ولوحة التحكم -->
+  <div class="main-content-grid">
+    
+    <!-- قسم الرسوم البيانية -->
+    <div class="charts-column">
+      <div class="panel-box">
+        <div class="panel-header">
+          <h2>مسار المؤشرات الاستراتيجية الرئيسية</h2>
+          <select id="indicatorSelect" class="pro-select">
+            <option value="all">عرض كافة المؤشرات معاً</option>
+            <option value="labor">مؤشر عدد العمالة</option>
+            <option value="fdi">الاستثمار الأجنبي المباشر</option>
+            <option value="exports">الصادرات غير النفطية</option>
+            <option value="gdp">مساهمة الناتج المحلي</option>
+          </select>
+        </div>
+        <div class="chart-container-pro">
+          <canvas id="mainChart"></canvas>
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-header">
+          <h2>تطور المؤسسات الصناعية الصغيرة والمتوسطة (SMEs)</h2>
+        </div>
+        <div class="chart-container-pro">
+          <canvas id="smesChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- لوحة التحكم الاحترافية لتعديل البيانات -->
+    <div class="control-column">
+      <div class="panel-box sticky-panel">
+        <div class="panel-header">
+          <h2>إدارة وتحديث البيانات</h2>
+        </div>
+        <p class="panel-desc">قم بتعديل قيم أي مؤشر لأي سنة بدقة لتحديث المرصد فوراً.</p>
+        
+        <form id="editForm" class="pro-form">
+          <div class="input-group">
+            <label for="editIndicator">اختر المؤشر المستهدف</label>
+            <select id="editIndicator" class="pro-select">
+              <option value="labor">مؤشر عدد العمالة</option>
+              <option value="fdi">الاستثمار الأجنبي المباشر</option>
+              <option value="exports">الصادرات غير النفطية</option>
+              <option value="gdp">مساهمة الناتج المحلي</option>
+              <option value="smes">المؤسسات الصغيرة والمتوسطة</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="editYear">اختر السنة (2020 - 2040)</label>
+            <select id="editYear" class="pro-select">
+              <option value="0">2020</option>
+              <option value="1">2021</option>
+              <option value="2">2022</option>
+              <option value="3">2023</option>
+              <option value="4">2024</option>
+              <option value="5">2025</option>
+              <option value="6">2026</option>
+              <option value="7">2027</option>
+              <option value="8">2028</option>
+              <option value="9">2029</option>
+              <option value="10">2030</option>
+              <option value="11">2031</option>
+              <option value="12">2032</option>
+              <option value="13">2033</option>
+              <option value="14">2034</option>
+              <option value="15">2035</option>
+              <option value="16">2036</option>
+              <option value="17">2037</option>
+              <option value="18">2038</option>
+              <option value="19">2039</option>
+              <option value="20" selected>2040</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="editValue">القيمة الجديدة للمؤشر</label>
+            <input type="text" id="editValue" class="pro-input" placeholder="أدخل القيمة (يدعم الفواصل)..." required />
+          </div>
+
+          <button type="submit" class="pro-submit-btn">تحديث وحفظ البيانات</button>
+        </form>
+
+        <div class="info-tip">
+          <span>💡</span>
+          <p>يمكنك الآن استخدام الفواصل (,) بكل سهولة عند إدخال الأرقام الكبيرة وسيتم معالجتها تلقائياً.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- تضمين مكتبة Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
