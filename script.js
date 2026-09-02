@@ -3,7 +3,9 @@ const years = [
   '2030', '2031', '2032', '2033', '2034', '2035', '2036', '2037', '2038', '2039', '2040'
 ];
 
-const datasetValues = {
+// جلب البيانات المخزنة مسبقاً أو استخدام البيانات الافتراضية
+const savedData = localStorage.getItem('industrialDashboardData');
+const datasetValues = savedData ? JSON.parse(savedData) : {
   labor: {
     label: 'مؤشر عدد العمالة (ألف عامل)',
     data: [250, 260, 270, 280, 295, 310, 320, 330, 340, 350, 360, 370, 380, 390, 398, 405, 414, 423, 432, 441, 450],
@@ -129,6 +131,9 @@ function updateMetricCards() {
   document.getElementById('val-gdp').textContent = Number(datasetValues.gdp.data[lastIndex]).toLocaleString() + '%';
 }
 
+// تحديث البطاقات عند بدء التشغيل
+updateMetricCards();
+
 // التصفية في الرسم البياني الرئيسي
 document.getElementById('indicatorSelect').addEventListener('change', function(e) {
   const value = e.target.value;
@@ -149,32 +154,33 @@ document.getElementById('indicatorSelect').addEventListener('change', function(e
   mainChart.update();
 });
 
-// التعامل مع نموذج تعديل وحفظ البيانات (تنظيف الفواصل وقراءتها كرقم صحيح)
+// التعامل مع نموذج تعديل وحفظ البيانات مع التخزين الدائم
 document.getElementById('editForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
   const indicator = document.getElementById('editIndicator').value;
   const yearIndex = parseInt(document.getElementById('editYear').value);
   
-  // إزالة الفواصل إن وجدت وتحويل النص إلى رقم
   let rawValue = document.getElementById('editValue').value;
   const cleanValue = parseFloat(rawValue.replace(/,/g, ''));
 
   if (!isNaN(cleanValue)) {
     datasetValues[indicator].data[yearIndex] = cleanValue;
 
+    // حفظ التعديلات في ذاكرة المتصفح الدائمة
+    localStorage.setItem('industrialDashboardData', JSON.stringify(datasetValues));
+
     mainChart.update();
     smesChart.update();
     updateMetricCards();
 
-    alert('تم تحديث وحفظ بيانات المؤشر بنجاح!');
+    alert('تم تحديث وحفظ بيانات المؤشر بنجاح ولن تختفي عند إغلاق الموقع!');
     populateInputValue();
   } else {
     alert('الرجاء إدخال قيمة رقمية صحيحة.');
   }
 });
 
-// تعبئة القيمة الحالية تلقائياً في خانة التعديل عند التبديل
 document.getElementById('editIndicator').addEventListener('change', populateInputValue);
 document.getElementById('editYear').addEventListener('change', populateInputValue);
 
