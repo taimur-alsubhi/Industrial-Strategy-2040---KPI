@@ -138,6 +138,16 @@ body {
   color: #0f172a;
 }
 
+.controls-wrapper {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.controls-wrapper .pro-select {
+  width: 180px;
+}
+
 .panel-desc {
   font-size: 13px;
   color: #64748b;
