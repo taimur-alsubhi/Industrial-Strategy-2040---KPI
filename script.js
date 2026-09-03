@@ -123,7 +123,16 @@ let smesChart = new Chart(ctxSmes, {
 });
 
 // دالة لتحديث البطاقات العلوية بقيم سنة 2040 مع الفواصل
+function updateMetricCards() {
+  const lastIndex = years.length - 1;
+  document.getElementById('val-labor').textContent = Number(datasetValues.labor.data[lastIndex]).toLocaleString() + ' ألف';
+  document.getElementById('val-fdi').textContent = Number(datasetValues.fdi.data[lastIndex]).toLocaleString() + ' مليار';
+  document.getElementById('val-exports').textContent = Number(datasetValues.exports.data[lastIndex]).toLocaleString() + ' مليار';
+  document.getElementById('val-gdp').textContent = Number(datasetValues.gdp.data[lastIndex]).toLocaleString() + '%';
+}
+
 // تحديث البطاقات عند بدء التشغيل
+updateMetricCards();
 
 // التصفية في الرسم البياني الرئيسي
 document.getElementById('indicatorSelect').addEventListener('change', function(e) {
@@ -148,10 +157,10 @@ document.getElementById('indicatorSelect').addEventListener('change', function(e
 // التعامل مع نموذج تعديل وحفظ البيانات مع التخزين الدائم
 document.getElementById('editForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  
+
   const indicator = document.getElementById('editIndicator').value;
   const yearIndex = parseInt(document.getElementById('editYear').value);
-  
+
   let rawValue = document.getElementById('editValue').value;
   const cleanValue = parseFloat(rawValue.replace(/,/g, ''));
 
