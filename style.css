@@ -19,6 +19,7 @@ body {
   margin: 0 auto;
 }
 
+/* الرأس الاحترافي */
 .top-header {
   background: #ffffff;
   padding: 20px 28px;
@@ -90,6 +91,7 @@ body {
   100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
 }
 
+/* التخطيط الرئيسي */
 .main-content-grid {
   display: grid;
   grid-template-columns: 2.2fr 1fr;
@@ -136,22 +138,13 @@ body {
   color: #0f172a;
 }
 
-.controls-wrapper {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.controls-wrapper .pro-select {
-  width: 180px;
-}
-
 .panel-desc {
   font-size: 13px;
   color: #64748b;
   margin-bottom: 20px;
 }
 
+/* عناصر التحكم والمدخلات الاحترافية */
 .pro-select, .pro-input {
   background-color: #f8fafc;
   color: #1e293b;
@@ -222,6 +215,7 @@ body {
   line-height: 1.5;
 }
 
+/* حاويات الرسوم البيانية */
 .chart-container-pro {
   position: relative;
   height: 350px !important;
