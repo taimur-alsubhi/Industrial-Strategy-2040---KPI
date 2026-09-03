@@ -123,16 +123,7 @@ let smesChart = new Chart(ctxSmes, {
 });
 
 // دالة لتحديث البطاقات العلوية بقيم سنة 2040 مع الفواصل
-function updateMetricCards() {
-  const lastIndex = years.length - 1;
-  document.getElementById('val-labor').textContent = Number(datasetValues.labor.data[lastIndex]).toLocaleString() + ' ألف';
-  document.getElementById('val-fdi').textContent = Number(datasetValues.fdi.data[lastIndex]).toLocaleString() + ' مليار';
-  document.getElementById('val-exports').textContent = Number(datasetValues.exports.data[lastIndex]).toLocaleString() + ' مليار';
-  document.getElementById('val-gdp').textContent = Number(datasetValues.gdp.data[lastIndex]).toLocaleString() + '%';
-}
-
 // تحديث البطاقات عند بدء التشغيل
-updateMetricCards();
 
 // التصفية في الرسم البياني الرئيسي
 document.getElementById('indicatorSelect').addEventListener('change', function(e) {
