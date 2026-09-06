@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة متابعة مؤشرات الاستراتيجية الصناعية 2040</title>
-    <!-- استدعاء ملف الـ CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- استدعاء مكتبة الرسوم البيانية Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -35,7 +33,6 @@
                     <div class="panel-header">
                         <h2>مسار المؤشرات الاستراتيجية (2020 - 2040)</h2>
                         <div class="controls-wrapper">
-                            <!-- القائمة الأولى: اختيار المؤشر -->
                             <select id="indicatorFilterSelect" class="pro-select">
                                 <option value="all">كافة المؤشرات الرئيسية</option>
                                 <option value="labor">مؤشر عدد العمالة</option>
@@ -44,7 +41,6 @@
                                 <option value="gdp">مساهمة الصناعة التحويلية</option>
                             </select>
 
-                            <!-- القائمة الثانية: نوع العرض -->
                             <select id="viewTypeSelect" class="pro-select">
                                 <option value="both">عرض المستهدف والمحقق معاً</option>
                                 <option value="target_only">المستهدف فقط</option>
@@ -84,7 +80,7 @@
                                 <option value="fdi">الاستثمار الأجنبي المباشر</option>
                                 <option value="exports">الصادرات غير النفطية</option>
                                 <option value="gdp">مساهمة الناتج المحلي</option>
-                                <option value="smes">المؤسسات الصغيرة والمتوسطة</option>
+                                <option value="smes">عدد المؤسسات الصناعية الصغيرة والمتوسطة</option>
                             </select>
                         </div>
 
@@ -126,7 +122,6 @@
         </div>
     </div>
 
-    <!-- استدعاء ملف الـ JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
