@@ -1,3 +1,47 @@
+// 1. إعداد الاتصال بـ Supabase
+// (استبدل القيم بالرابط والمفتاح اللذين نسختهما)
+const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co'; 
+const SUPABASE_ANON_KEY = 'YOUR_PUBLISHABLE_ANON_KEY';
+
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// 2. دالة لجلب كافة البيانات من جدول KPIs
+async function fetchAllKPIData() {
+    try {
+        const { data, error } = await _supabase
+            .from('KPIs')
+            .select('*');
+
+        if (error) {
+            console.error('حدث خطأ أثناء جلب البيانات:', error.message);
+            return null;
+        }
+
+        console.log('تم جلب البيانات بنجاح من Supabase:', data);
+        return data;
+    } catch (err) {
+        console.error('خطأ غير متوقع:', err);
+    }
+}
+
+// 3. دالة لتحديث واجهة الموقع بالأرقام الجديدة
+async function updateDashboard() {
+    const kpiData = await fetchAllKPIData();
+    if (!kpiData) return;
+
+    // هنا يمكنك تصفيات البيانات بحسب السنة والمؤشر المطلوب
+    // مثال: جلب بيانات مؤشر معين لسنة 2024
+    /* 
+    const item = kpiData.find(d => d.title.includes('الصادرات السلعية') && d.year === 2024);
+    if (item) {
+        document.getElementById('actual-export').innerText = item.actual_value;
+        document.getElementById('target-export').innerText = item.target_value;
+    }
+    */
+}
+
+// تشغيل الدالة فور تحميل الصفحة
+document.addEventListener('DOMContentLoaded', updateDashboard);
 document.addEventListener('DOMContentLoaded', () => {
   const years = [
     '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029',
