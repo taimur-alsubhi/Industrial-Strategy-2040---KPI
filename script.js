@@ -1,101 +1,87 @@
 // 1. إعداد الاتصال بـ Supabase
-// (استبدل القيم بالرابط والمفتاح اللذين نسختهما)
-const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co'; 
-const SUPABASE_ANON_KEY = 'YOUR_PUBLISHABLE_ANON_KEY';
+const SUPABASE_URL = 'https://ftnqjxjxdoyevbxwaipp.supabase.co/rest/v1/'; // استبدله برابط مشروعك
+const SUPABASE_ANON_KEY = 'sb_publishable_lvW9rg7upoYir0azjHgMNg_XD_PVwu9'; // استبدله بمفتاح الـ Publishable/anon
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 2. دالة لجلب كافة البيانات من جدول KPIs
-async function fetchAllKPIData() {
-    try {
-        const { data, error } = await _supabase
-            .from('KPIs')
-            .select('*');
-
-        if (error) {
-            console.error('حدث خطأ أثناء جلب البيانات:', error.message);
-            return null;
-        }
-
-        console.log('تم جلب البيانات بنجاح من Supabase:', data);
-        return data;
-    } catch (err) {
-        console.error('خطأ غير متوقع:', err);
-    }
-}
-
-// 3. دالة لتحديث واجهة الموقع بالأرقام الجديدة
-async function updateDashboard() {
-    const kpiData = await fetchAllKPIData();
-    if (!kpiData) return;
-
-    // هنا يمكنك تصفيات البيانات بحسب السنة والمؤشر المطلوب
-    // مثال: جلب بيانات مؤشر معين لسنة 2024
-    /* 
-    const item = kpiData.find(d => d.title.includes('الصادرات السلعية') && d.year === 2024);
-    if (item) {
-        document.getElementById('actual-export').innerText = item.actual_value;
-        document.getElementById('target-export').innerText = item.target_value;
-    }
-    */
-}
-
-// تشغيل الدالة فور تحميل الصفحة
-document.addEventListener('DOMContentLoaded', updateDashboard);
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const years = [
     '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029',
     '2030', '2031', '2032', '2033', '2034', '2035', '2036', '2037', '2038', '2039', '2040'
   ];
 
-  // جلب البيانات مع فحص سلامة البنية لتجنب أي تعارض في التخزين المؤقت القديم
-  let datasetValues;
-  try {
-    const savedData = localStorage.getItem('industrialDashboardData');
-    datasetValues = savedData ? JSON.parse(savedData) : null;
-    if (!datasetValues || !datasetValues.labor || !datasetValues.smes) {
-      throw new Error('Invalid structure');
+  // 2. جلب البيانات من Supabase وتوزيعها على الهيكل المطلوب للرسوم البيانية
+  let datasetValues = {
+    labor: {
+      label: 'مؤشر عدد العمالة',
+      target: new Array(21).fill(0),
+      achieved: new Array(21).fill(0),
+      borderColor: '#0284c7',
+      achievedColor: '#0369a1'
+    },
+    fdi: {
+      label: 'الاستثمار الأجنبي المباشر',
+      target: new Array(21).fill(0),
+      achieved: new Array(21).fill(0),
+      borderColor: '#16a34a',
+      achievedColor: '#15803d'
+    },
+    exports: {
+      label: 'الصادرات السلعية غير النفطية',
+      target: new Array(21).fill(0),
+      achieved: new Array(21).fill(0),
+      borderColor: '#d97706',
+      achievedColor: '#b45309'
+    },
+    gdp: {
+      label: 'مساهمة الصناعة التحويلية',
+      target: new Array(21).fill(0),
+      achieved: new Array(21).fill(0),
+      borderColor: '#e11d48',
+      achievedColor: '#be123c'
+    },
+    smes: {
+      label: 'عدد المؤسسات الصناعية الصغيرة والمتوسطة',
+      target: new Array(21).fill(0),
+      achieved: new Array(21).fill(0)
     }
-  } catch (e) {
-    datasetValues = {
-      labor: {
-        label: 'مؤشر عدد العمالة',
-        target: [250, 260, 270, 280, 295, 310, 320, 330, 340, 350, 360, 370, 380, 390, 398, 405, 414, 423, 432, 441, 450],
-        achieved: [240, 255, 265, 275, 290, 305, 315, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        borderColor: '#0284c7',
-        achievedColor: '#0369a1'
-      },
-      fdi: {
-        label: 'الاستثمار الأجنبي المباشر',
-        target: [4.2, 4.7, 5.2, 5.8, 6.4, 7.0, 7.4, 7.8, 8.2, 8.7, 9.2, 9.6, 10.0, 10.5, 10.8, 11.0, 11.3, 11.6, 11.9, 12.2, 12.5],
-        achieved: [4.0, 4.5, 5.0, 5.5, 6.2, 6.8, 7.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        borderColor: '#16a34a',
-        achievedColor: '#15803d'
-      },
-      exports: {
-        label: 'الصادرات السلعية غير النفطية',
-        target: [6.0, 6.7, 7.4, 8.1, 8.8, 9.5, 9.9, 10.3, 10.8, 11.3, 11.8, 12.2, 12.6, 13.0, 13.3, 13.5, 13.8, 14.1, 14.4, 14.7, 15.0],
-        achieved: [5.8, 6.5, 7.2, 7.9, 8.5, 9.2, 9.7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        borderColor: '#d97706',
-        achievedColor: '#b45309'
-      },
-      gdp: {
-        label: 'مساهمة الصناعة التحويلية',
-        target: [9.5, 9.9, 10.4, 10.8, 11.4, 12.0, 12.3, 12.6, 12.9, 13.2, 13.5, 13.8, 14.1, 14.4, 14.6, 14.8, 15.0, 15.3, 15.5, 15.8, 16.0],
-        achieved: [9.2, 9.7, 10.1, 10.6, 11.2, 11.8, 12.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        borderColor: '#e11d48',
-        achievedColor: '#be123c'
-      },
-      smes: {
-        label: 'عدد المؤسسات الصناعية الصغيرة والمتوسطة',
-        target: [3200, 3500, 3800, 4100, 4450, 4800, 5140, 5480, 5820, 6160, 6500, 6840, 7180, 7520, 7860, 8200, 8560, 8920, 9280, 9640, 10000],
-        achieved: [3100, 3400, 3700, 4000, 4300, 4700, 5000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-      }
-    };
-    localStorage.setItem('industrialDashboardData', JSON.stringify(datasetValues));
+  };
+
+  // ربط الأسماء المخزنة في قاعدة البيانات بمفاتيح الكود
+  const titleToKeyMap = {
+    'مؤشر عدد العمالة (ألف عامل)': 'labor',
+    'الاستثمار الأجنبي المباشر (مليار ر.ع)': 'fdi',
+    'الصادرات السلعية غير النفطية (مليار ر.ع)': 'exports',
+    'مساهمة الصناعة التحويلية في الناتج المحلي (%)': 'gdp',
+    'عدد المؤسسات الصناعية الصغيرة والمتوسطة': 'smes'
+  };
+
+  try {
+    const { data: remoteData, error } = await _supabase.from('KPIs').select('*');
+    if (!error && remoteData && remoteData.length > 0) {
+      remoteData.forEach(row => {
+        // البحث عن المفتاح المناسب بناءً على عنوان المؤشر في قاعدة البيانات
+        const key = Object.keys(titleToKeyMap).find(k => row.title.includes(k) || k.includes(row.title));
+        if (key) {
+          const internalKey = titleToKeyMap[key];
+          const yearIndex = years.indexOf(row.year.toString());
+          if (yearIndex !== -1) {
+            datasetValues[internalKey].target[yearIndex] = row.target_value;
+            datasetValues[internalKey].achieved[yearIndex] = row.actual_value;
+          }
+        }
+      });
+      console.log('تم سحب البيانات بنجاح من سوبابيس وتحديث الرسوم البيانية!');
+    } else {
+      console.warn('لم يتم العثور على بيانات في سوبابيس، سيتم استخدام التخزين المحلي.');
+      const savedData = localStorage.getItem('industrialDashboardData');
+      if (savedData) datasetValues = JSON.parse(savedData);
+    }
+  } catch (err) {
+    console.error('خطأ أثناء جلب البيانات من سوبابيس:', err);
   }
 
-  // تهيئة الرسم البياني الرئيسي
+  // 3. تهيئة الرسم البياني الرئيسي
   const ctxMain = document.getElementById('mainChart').getContext('2d');
   let mainChart = new Chart(ctxMain, {
     type: 'line',
@@ -166,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return datasets;
   }
 
-  // تهيئة رسم المؤسسات الصغيرة والمتوسطة
+  // 4. تهيئة رسم المؤسسات الصغيرة والمتوسطة
   const ctxSmes = document.getElementById('smesChart').getContext('2d');
   let smesChart = new Chart(ctxSmes, {
     type: 'bar',
@@ -223,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mainChart.update();
   }
 
-  // معالجة نموذج التعديل والحفظ بشكل محكم ونهائي
+  // معالجة نموذج التعديل والحفظ محلياً
   const editForm = document.getElementById('editForm');
   editForm.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -241,22 +227,19 @@ document.addEventListener('DOMContentLoaded', () => {
       
       datasetValues[indicator][valueType][yearIndex] = cleanValue;
 
-      // حفظ دائم في المتصفح
       localStorage.setItem('industrialDashboardData', JSON.stringify(datasetValues));
 
-      // تحديث الرسوم البيانية فوراً
       updateMainChart();
       smesChart.data.datasets[0].data = datasetValues.smes.target;
       smesChart.data.datasets[1].data = datasetValues.smes.achieved;
       smesChart.update();
 
-      alert('تم تحديث وحفظ بيانات المؤشر بنجاح ولن تختفي عند إغلاق الموقع!');
+      alert('تم تحديث وحفظ بيانات المؤشر بنجاح!');
     } else {
       alert('الرجاء التأكد من إدخال قيمة رقمية صحيحة في الحقل.');
     }
   });
 
-  // تعبئة حقل المدخلات عند تغيير خيارات النموذج
   const editIndicatorSelect = document.getElementById('editIndicator');
   const editValueTypeSelect = document.getElementById('editValueType');
   const editYearSelect = document.getElementById('editYear');
@@ -276,6 +259,5 @@ document.addEventListener('DOMContentLoaded', () => {
   editValueTypeSelect.addEventListener('change', populateInputValue);
   editYearSelect.addEventListener('change', populateInputValue);
 
-  // تشغيلها عند التحميل لضبط القيمة الأولية
   populateInputValue();
 });
