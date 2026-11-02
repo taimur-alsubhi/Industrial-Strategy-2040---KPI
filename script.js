@@ -1,6 +1,6 @@
 // 1. إعداد الاتصال بـ Supabase
-const SUPABASE_URL = 'https://ftnqjxjxdoyevbxwaipp.supabase.co/rest/v1/'; // استبدله برابط مشروعك
-const SUPABASE_ANON_KEY = 'sb_publishable_lvW9rg7upoYir0azjHgMNg_XD_PVwu9'; // استبدله بمفتاح الـ Publishable/anon
+const SUPABASE_URL = 'https://ftnqjxjxdoyevbxwaipp.supabase.co'; // تم إزالة /rest/v1/ للتوافق الصحيح
+const SUPABASE_ANON_KEY = 'sb_publishable_lvW9rg7upoYir0azjHgMNg_XD_PVwu9'; 
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -10,10 +10,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     '2030', '2031', '2032', '2033', '2034', '2035', '2036', '2037', '2038', '2039', '2040'
   ];
 
-  // 2. جلب البيانات من Supabase وتوزيعها على الهيكل المطلوب للرسوم البيانية
+  // 2. هيكل البيانات وتسميات الرسوم البيانية الجديدة
   let datasetValues = {
+    gdp: {
+      label: 'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي',
+      target: new Array(21).fill(0),
+      achieved: new Array(21).fill(0),
+      borderColor: '#e11d48',
+      achievedColor: '#be123c'
+    },
+    exports: {
+      label: 'الصادرات السلعية',
+      target: new Array(21).fill(0),
+      achieved: new Array(21).fill(0),
+      borderColor: '#d97706',
+      achievedColor: '#b45309'
+    },
     labor: {
-      label: 'مؤشر عدد العمالة',
+      label: 'عدد العاملين في القطاع الصناعي',
       target: new Array(21).fill(0),
       achieved: new Array(21).fill(0),
       borderColor: '#0284c7',
@@ -26,20 +40,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       borderColor: '#16a34a',
       achievedColor: '#15803d'
     },
-    exports: {
-      label: 'الصادرات السلعية غير النفطية',
-      target: new Array(21).fill(0),
-      achieved: new Array(21).fill(0),
-      borderColor: '#d97706',
-      achievedColor: '#b45309'
-    },
-    gdp: {
-      label: 'مساهمة الصناعة التحويلية',
-      target: new Array(21).fill(0),
-      achieved: new Array(21).fill(0),
-      borderColor: '#e11d48',
-      achievedColor: '#be123c'
-    },
     smes: {
       label: 'عدد المؤسسات الصناعية الصغيرة والمتوسطة',
       target: new Array(21).fill(0),
@@ -47,21 +47,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  // ربط الأسماء المخزنة في قاعدة البيانات بمفاتيح الكود
+  // ربط العناوين الجديدة المخزنة في قاعدة البيانات بالمفاتيح الداخلية
   const titleToKeyMap = {
-    'مؤشر عدد العمالة (ألف عامل)': 'labor',
-    'الاستثمار الأجنبي المباشر (مليار ر.ع)': 'fdi',
-    'الصادرات السلعية غير النفطية (مليار ر.ع)': 'exports',
-    'مساهمة الصناعة التحويلية في الناتج المحلي (%)': 'gdp',
+    'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي': 'gdp',
+    'الصادرات السلعية': 'exports',
+    'عدد العاملين في القطاع الصناعي': 'labor',
+    'الاستثمار الأجنبي المباشر': 'fdi',
     'عدد المؤسسات الصناعية الصغيرة والمتوسطة': 'smes'
+  };
+
+  // العكسي لعمليات التحديث في قاعدة البيانات
+  const reverseKeyMap = {
+    gdp: 'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي',
+    exports: 'الصادرات السلعية',
+    labor: 'عدد العاملين في القطاع الصناعي',
+    fdi: 'الاستثمار الأجنبي المباشر',
+    smes: 'عدد المؤسسات الصناعية الصغيرة والمتوسطة'
   };
 
   try {
     const { data: remoteData, error } = await _supabase.from('KPIs').select('*');
     if (!error && remoteData && remoteData.length > 0) {
       remoteData.forEach(row => {
-        // البحث عن المفتاح المناسب بناءً على عنوان المؤشر في قاعدة البيانات
-        const key = Object.keys(titleToKeyMap).find(k => row.title.includes(k) || k.includes(row.title));
+        const key = Object.keys(titleToKeyMap).find(k => row.title && (row.title.includes(k) || k.includes(row.title)));
         if (key) {
           const internalKey = titleToKeyMap[key];
           const yearIndex = years.indexOf(row.year.toString());
@@ -71,9 +79,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         }
       });
-      console.log('تم سحب البيانات بنجاح من سوبابيس وتحديث الرسوم البيانية!');
+      console.log('تم سحب البيانات بنجاح من سوبابيس!');
     } else {
-      console.warn('لم يتم العثور على بيانات في سوبابيس، سيتم استخدام التخزين المحلي.');
+      console.warn('لم يتم العثور على بيانات، جاري استخدام التخزين المحلي.');
       const savedData = localStorage.getItem('industrialDashboardData');
       if (savedData) datasetValues = JSON.parse(savedData);
     }
@@ -121,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const indicatorKey = document.getElementById('indicatorFilterSelect').value;
     let datasets = [];
 
-    const keysToProcess = indicatorKey === 'all' ? ['labor', 'fdi', 'exports', 'gdp'] : [indicatorKey];
+    const keysToProcess = indicatorKey === 'all' ? ['gdp', 'exports', 'labor', 'fdi'] : [indicatorKey];
 
     keysToProcess.forEach(key => {
       let item = datasetValues[key];
@@ -200,7 +208,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // ربط أحداث القوائم العلوية
   document.getElementById('viewTypeSelect').addEventListener('change', updateMainChart);
   document.getElementById('indicatorFilterSelect').addEventListener('change', updateMainChart);
 
@@ -209,14 +216,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     mainChart.update();
   }
 
-  // معالجة نموذج التعديل والحفظ محلياً
+  // 5. نموذج التعديل والحفظ المتصل بـ سوبابيس
   const editForm = document.getElementById('editForm');
-  editForm.addEventListener('submit', function(e) {
+  editForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const indicator = document.getElementById('editIndicator').value;
     const valueType = document.getElementById('editValueType').value;
     const yearIndex = parseInt(document.getElementById('editYear').value);
+    const targetYear = 2020 + yearIndex;
+    
     let rawValue = document.getElementById('editValue').value;
     const cleanValue = parseFloat(rawValue.replace(/,/g, ''));
 
@@ -226,15 +235,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       
       datasetValues[indicator][valueType][yearIndex] = cleanValue;
+      const rowTitle = reverseKeyMap[indicator];
 
-      localStorage.setItem('industrialDashboardData', JSON.stringify(datasetValues));
+      try {
+        const updateData = {};
+        if (valueType === 'target') {
+          updateData.target_value = cleanValue;
+        } else {
+          updateData.actual_value = cleanValue;
+        }
+
+        const { error } = await _supabase
+          .from('KPIs')
+          .update(updateData)
+          .eq('year', targetYear)
+          .ilike('title', `%${rowTitle}%`);
+
+        if (error) throw error;
+        alert('تم تحديث وحفظ البيانات في سوبابيس بنجاح! 🚀');
+      } catch (err) {
+        console.error('خطأ أثناء الحفظ في سوبابيس:', err);
+        localStorage.setItem('industrialDashboardData', JSON.stringify(datasetValues));
+        alert('تم التحديث محلياً (تعذر الاتصال بقاعدة البيانات لحظياً).');
+      }
 
       updateMainChart();
       smesChart.data.datasets[0].data = datasetValues.smes.target;
       smesChart.data.datasets[1].data = datasetValues.smes.achieved;
       smesChart.update();
 
-      alert('تم تحديث وحفظ بيانات المؤشر بنجاح!');
     } else {
       alert('الرجاء التأكد من إدخال قيمة رقمية صحيحة في الحقل.');
     }
