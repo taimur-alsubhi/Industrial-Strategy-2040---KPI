@@ -1,5 +1,5 @@
 // 1. إعداد الاتصال بـ Supabase
-const SUPABASE_URL = 'https://ftnqjxjxdoyevbxwaipp.supabase.co'; // تم إزالة /rest/v1/ للتوافق الصحيح
+const SUPABASE_URL = 'https://ftnqjxjxdoyevbxwaipp.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_lvW9rg7upoYir0azjHgMNg_XD_PVwu9'; 
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -10,31 +10,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     '2030', '2031', '2032', '2033', '2034', '2035', '2036', '2037', '2038', '2039', '2040'
   ];
 
-  // 2. هيكل البيانات وتسميات الرسوم البيانية الجديدة
+  // 2. هيكل البيانات والتسميات المطابقة تماماً لقاعدة البيانات Supabase
   let datasetValues = {
     gdp: {
-      label: 'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي',
+      label: 'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي (مليون ر.ع)',
       target: new Array(21).fill(0),
       achieved: new Array(21).fill(0),
       borderColor: '#e11d48',
       achievedColor: '#be123c'
     },
     exports: {
-      label: 'الصادرات السلعية',
+      label: 'الصادرات السلعية (مليون ر.ع)',
       target: new Array(21).fill(0),
       achieved: new Array(21).fill(0),
       borderColor: '#d97706',
       achievedColor: '#b45309'
     },
     labor: {
-      label: 'عدد العاملين في القطاع الصناعي',
+      label: 'عدد العاملين في القطاع الصناعي (ألف وظيفة)',
       target: new Array(21).fill(0),
       achieved: new Array(21).fill(0),
       borderColor: '#0284c7',
       achievedColor: '#0369a1'
     },
     fdi: {
-      label: 'الاستثمار الأجنبي المباشر',
+      label: 'الاستثمار الأجنبي المباشر (مليون ر.ع)',
       target: new Array(21).fill(0),
       achieved: new Array(21).fill(0),
       borderColor: '#16a34a',
@@ -47,43 +47,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  // ربط العناوين الجديدة المخزنة في قاعدة البيانات بالمفاتيح الداخلية
+  // ربط العناوين بالضبط كما هي مكتوبة ومخزنة في عمود title داخل قاعدة البيانات
   const titleToKeyMap = {
-    'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي': 'gdp',
-    'الصادرات السلعية': 'exports',
-    'عدد العاملين في القطاع الصناعي': 'labor',
-    'الاستثمار الأجنبي المباشر': 'fdi',
+    'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي (مليون ر.ع)': 'gdp',
+    'الصادرات السلعية (مليون ر.ع)': 'exports',
+    'عدد العاملين في القطاع الصناعي (ألف وظيفة)': 'labor',
+    'الاستثمار الأجنبي المباشر (مليون ر.ع)': 'fdi',
     'عدد المؤسسات الصناعية الصغيرة والمتوسطة': 'smes'
   };
 
-  // العكسي لعمليات التحديث في قاعدة البيانات
   const reverseKeyMap = {
-    gdp: 'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي',
-    exports: 'الصادرات السلعية',
-    labor: 'عدد العاملين في القطاع الصناعي',
-    fdi: 'الاستثمار الأجنبي المباشر',
+    gdp: 'مساهمة القطاع الصناعي في الناتج المحلي الإجمالي (مليون ر.ع)',
+    exports: 'الصادرات السلعية (مليون ر.ع)',
+    labor: 'عدد العاملين في القطاع الصناعي (ألف وظيفة)',
+    fdi: 'الاستثمار الأجنبي المباشر (مليون ر.ع)',
     smes: 'عدد المؤسسات الصناعية الصغيرة والمتوسطة'
   };
 
+  // جلب البيانات الأولية من سوبابيس إن وجدت
   try {
     const { data: remoteData, error } = await _supabase.from('KPIs').select('*');
     if (!error && remoteData && remoteData.length > 0) {
       remoteData.forEach(row => {
-        const key = Object.keys(titleToKeyMap).find(k => row.title && (row.title.includes(k) || k.includes(row.title)));
-        if (key) {
-          const internalKey = titleToKeyMap[key];
-          const yearIndex = years.indexOf(row.year.toString());
+        const internalKey = titleToKeyMap[row.title?.trim()];
+        if (internalKey) {
+          const yearIndex = years.indexOf(row.year ? row.year.toString().trim() : '');
           if (yearIndex !== -1) {
-            datasetValues[internalKey].target[yearIndex] = row.target_value;
-            datasetValues[internalKey].achieved[yearIndex] = row.actual_value;
+            datasetValues[internalKey].target[yearIndex] = row.target_value || 0;
+            datasetValues[internalKey].achieved[yearIndex] = row.actual_value || 0;
           }
         }
       });
-      console.log('تم سحب البيانات بنجاح من سوبابيس!');
+      console.log('تم تحميل البيانات بنجاح من سوبابيس!');
     } else {
-      console.warn('لم يتم العثور على بيانات، جاري استخدام التخزين المحلي.');
-      const savedData = localStorage.getItem('industrialDashboardData');
-      if (savedData) datasetValues = JSON.parse(savedData);
+      console.warn('لم يتم العثور على بيانات في سوبابيس، تم استخدام القيم المبدئية.');
     }
   } catch (err) {
     console.error('خطأ أثناء جلب البيانات من سوبابيس:', err);
@@ -216,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     mainChart.update();
   }
 
-  // 5. نموذج التعديل والحفظ المتصل بـ سوبابيس
+  // 5. نموذج التعديل والإدخال المباشر لجدول سوبابيس
   const editForm = document.getElementById('editForm');
   editForm.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -224,18 +221,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const indicator = document.getElementById('editIndicator').value;
     const valueType = document.getElementById('editValueType').value;
     const yearIndex = parseInt(document.getElementById('editYear').value);
-    const targetYear = 2020 + yearIndex;
+    const targetYear = (2020 + yearIndex).toString();
     
     let rawValue = document.getElementById('editValue').value;
     const cleanValue = parseFloat(rawValue.replace(/,/g, ''));
 
     if (!isNaN(cleanValue) && datasetValues[indicator]) {
-      if (!datasetValues[indicator][valueType]) {
-        datasetValues[indicator][valueType] = new Array(21).fill(0);
-      }
-      
+      // 1. تحديث القيمة محلياً ليتغير الرسم البياني فوراً
       datasetValues[indicator][valueType][yearIndex] = cleanValue;
-      const rowTitle = reverseKeyMap[indicator];
+      const exactTitle = reverseKeyMap[indicator];
 
       try {
         const updateData = {};
@@ -245,27 +239,35 @@ document.addEventListener('DOMContentLoaded', async () => {
           updateData.actual_value = cleanValue;
         }
 
-        const { error } = await _supabase
+        // 2. تحديث السطر مباشرة في سوبابيس استناداً للسنة والعنوان المطابق تماماً
+        const { data, error } = await _supabase
           .from('KPIs')
           .update(updateData)
           .eq('year', targetYear)
-          .ilike('title', `%${rowTitle}%`);
+          .eq('title', exactTitle)
+          .select();
 
         if (error) throw error;
-        alert('تم تحديث وحفظ البيانات في سوبابيس بنجاح! 🚀');
+
+        if (data && data.length > 0) {
+          alert('تم حفظ وإدخال الرقم بنجاح في جدول سوبابيس! 🚀');
+        } else {
+          alert('تنبيه: تم التحديث في الشاشة، ولكن يرجى التأكد من وجود صف بهذه السنة والعنوان في سوبابيس لتخزينه.');
+        }
+
       } catch (err) {
-        console.error('خطأ أثناء الحفظ في سوبابيس:', err);
-        localStorage.setItem('industrialDashboardData', JSON.stringify(datasetValues));
-        alert('تم التحديث محلياً (تعذر الاتصال بقاعدة البيانات لحظياً).');
+        console.error('خطأ أثناء إرسال البيانات لسوبابيس:', err);
+        alert('حدث خطأ أثناء الاتصال بقاعدة البيانات: ' + err.message);
       }
 
+      // 3. تحديث الرسومات البيانية
       updateMainChart();
       smesChart.data.datasets[0].data = datasetValues.smes.target;
       smesChart.data.datasets[1].data = datasetValues.smes.achieved;
       smesChart.update();
 
     } else {
-      alert('الرجاء التأكد من إدخال قيمة رقمية صحيحة في الحقل.');
+      alert('الرجاء التأكد من إدخال قيمة رقمية صحيحة.');
     }
   });
 
