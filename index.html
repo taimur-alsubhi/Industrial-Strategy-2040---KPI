@@ -34,13 +34,14 @@
                     <div class="panel-header">
                         <h2>مسار المؤشرات الاستراتيجية (2020 - 2040)</h2>
                         <div class="controls-wrapper">
-                            <select id="indicatorFilterSelect" class="pro-select">
-                                <option value="all">كافة المؤشرات الرئيسية</option>
-                                <option value="labor">مؤشر عدد العمالة</option>
-                                <option value="fdi">الاستثمار الأجنبي المباشر</option>
-                                <option value="exports">الصادرات السلعية غير النفطية</option>
-                                <option value="gdp">مساهمة الصناعة التحويلية</option>
-                            </select>
+                           <!-- 1. قائمة فلترة الرسم البياني الرئيسي -->
+<select id="indicatorFilterSelect" class="pro-select">
+    <option value="all">كافة المؤشرات الرئيسية</option>
+    <option value="gdp">مساهمة القطاع الصناعي في الناتج المحلي الإجمالي</option>
+    <option value="exports">الصادرات السلعية</option>
+    <option value="labor">عدد العاملين في القطاع الصناعي</option>
+    <option value="fdi">الاستثمار الأجنبي المباشر</option>
+</select>
 
                             <select id="viewTypeSelect" class="pro-select">
                                 <option value="both">عرض المستهدف والمحقق معاً</option>
@@ -77,12 +78,12 @@
                         <div class="input-group">
                             <label for="editIndicator">اختر المؤشر:</label>
                             <select id="editIndicator" class="pro-select">
-                                <option value="labor">العمالة الصناعية</option>
-                                <option value="fdi">الاستثمار الأجنبي المباشر</option>
-                                <option value="exports">الصادرات غير النفطية</option>
-                                <option value="gdp">مساهمة الناتج المحلي</option>
-                                <option value="smes">عدد المؤسسات الصناعية الصغيرة والمتوسطة</option>
-                            </select>
+    <option value="gdp">مساهمة القطاع الصناعي في الناتج المحلي الإجمالي (مليون ر.ع)</option>
+    <option value="exports">الصادرات السلعية (مليون ر.ع)</option>
+    <option value="labor">عدد العاملين في القطاع الصناعي (ألف وظيفة)</option>
+    <option value="fdi">الاستثمار الأجنبي المباشر (مليون ر.ع)</option>
+    <option value="smes">عدد المؤسسات الصناعية الصغيرة والمتوسطة</option>
+</select>
                         </div>
 
                         <div class="input-group">
